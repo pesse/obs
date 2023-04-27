@@ -1,0 +1,71 @@
+<html>
+    <head>
+        <script lang="JavaScript">
+            let interval;
+            let startTime;
+            let countdown = 10*60; // Countdown in seconds
+
+            function padWithZero(num) {
+                return ('00'+num).slice(-2);
+            }
+
+            function renderCountdown( passedTime ) {
+                let remainingTime = countdown - Math.round(passedTime/1000);
+                let seconds = remainingTime % 60;
+                let minutes = Math.floor(remainingTime / 60) % 60;
+                let hours = Math.floor(remainingTime / 60 / 60);
+                document.getElementById('content').textContent = `${padWithZero(hours)}:${padWithZero(minutes)}:${padWithZero(seconds)}`;
+            }
+
+            function intervalTick() {
+                let timePassed = new Date().getTime()-startTime;
+                renderCountdown(timePassed);
+                if ( timePassed >= countdown*1000) {
+                    clearInterval(interval);
+                }
+            }
+
+            function setCountdown( timeString ) {
+                let re = /\?(\d+h)?(\d+m)?(\d+s)?/gi.exec(timeString);
+                let hours = (re[1] ?? '0h').slice(0, -1)*1;
+                let minutes = (re[2] ?? '0m').slice(0, -1)*1;
+                let seconds = (re[3] ?? '0s').slice(0, -1)*1;
+
+                countdown = hours*60*60 + minutes*60 + seconds;
+            }
+
+            function start() {
+                setCountdown(location.search);
+                startTime = new Date().getTime();
+                renderCountdown(0);
+                interval = setInterval(intervalTick, 1000);
+            }
+        </script>
+        <style>
+            #countdown {
+                text-align: center;
+                padding:40px
+            }
+
+            #content {
+                font-family: "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+                font-size: 20vw;
+                color: #fff;
+                text-shadow:
+                    0 0 5px #fff,
+                    0 0 10px #fff,
+                    0 0 20px #fff,
+                    0 0 40px #0ff,
+                    0 0 80px #0ff,
+                    0 0 90px #0ff,
+                    0 0 100px #0ff,
+                    0 0 150px #0ff;
+            }
+        </style>
+    </head>
+    <body onload="start()">
+        <div id="countdown">
+            <span id="content">Set countdown</span>
+        </div>
+    </body>
+</html>
