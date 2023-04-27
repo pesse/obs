@@ -1,52 +1,13 @@
 <html>
     <head>
-        <script lang="JavaScript">
-            let interval;
-            let startTime;
-            let countdown = 10*60; // Countdown in seconds
-
-            function padWithZero(num) {
-                return ('00'+num).slice(-2);
-            }
-
-            function renderCountdown( passedTime ) {
-                let remainingTime = countdown - Math.round(passedTime/1000);
-                let seconds = remainingTime % 60;
-                let minutes = Math.floor(remainingTime / 60) % 60;
-                let hours = Math.floor(remainingTime / 60 / 60);
-                document.getElementById('content').textContent = `${padWithZero(hours)}:${padWithZero(minutes)}:${padWithZero(seconds)}`;
-            }
-
-            function intervalTick() {
-                let timePassed = new Date().getTime()-startTime;
-                renderCountdown(timePassed);
-                if ( timePassed >= countdown*1000) {
-                    clearInterval(interval);
-                }
-            }
-
-            function setCountdown( timeString ) {
-                let re = /\?(\d+h)?(\d+m)?(\d+s)?/gi.exec(timeString);
-                let hours = (re[1] ?? '0h').slice(0, -1)*1;
-                let minutes = (re[2] ?? '0m').slice(0, -1)*1;
-                let seconds = (re[3] ?? '0s').slice(0, -1)*1;
-
-                countdown = hours*60*60 + minutes*60 + seconds;
-            }
-
-            function start() {
-                setCountdown(location.search);
-                startTime = new Date().getTime();
-                renderCountdown(0);
-                interval = setInterval(intervalTick, 1000);
-            }
-        </script>
         <style>
             #countdown {
                 text-align: center;
-                padding:40px
+                padding:40px;
+                align-content: center;
             }
 
+            /* To style your counter, change the following CSS */
             #content {
                 font-family: "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
                 font-size: 20vw;
@@ -61,11 +22,80 @@
                     0 0 100px #0ff,
                     0 0 150px #0ff;
             }
+
+            
+            #help {
+                font-family: Verdana, Geneva, Tahoma, sans-serif;
+                font-size: 10pt;
+                
+            }
+            
+            #help > table {
+                font-size: 10pt;
+                margin-top: 10px;
+                margin-left: auto;
+                margin-right: auto;
+            }
         </style>
+        <script lang="JavaScript">
+            let interval;
+            let startTime;
+            let countdown;
+
+            function padWithZero(num) {
+                return ('00'+num).slice(-2);
+            }
+
+            function renderCountdown( passedTime ) {
+                let remainingTime = countdown - Math.round(passedTime/1000);
+                let seconds = remainingTime % 60;
+                let minutes = Math.floor(remainingTime / 60) % 60;
+                let hours   = Math.floor(remainingTime / 60 / 60);
+
+                document.getElementById('content').textContent = `${padWithZero(hours)}:${padWithZero(minutes)}:${padWithZero(seconds)}`;
+            }
+
+            function intervalTick() {
+                let timePassed = new Date().getTime()-startTime;
+                renderCountdown(timePassed);
+                if ( timePassed >= countdown*1000) {
+                    clearInterval(interval);
+                }
+            }
+
+            function setCountdown( timeString ) {
+                let re = /\?(\d+h)?(\d+m)?(\d+s)?/gi.exec(timeString);
+                let hours   = (re[1] ?? '0h').slice(0, -1)*1;
+                let minutes = (re[2] ?? '0m').slice(0, -1)*1;
+                let seconds = (re[3] ?? '0s').slice(0, -1)*1;
+
+                countdown = hours*60*60 + minutes*60 + seconds;
+            }
+
+            function start() {
+                
+                startTime = new Date().getTime();
+                setCountdown(location.search);
+                
+                if ( countdown > 0 ) {
+                    document.getElementById('help').style.display = "none";
+                    renderCountdown(0);
+                    interval = setInterval(intervalTick, 1000);
+                }
+                
+            }
+        </script>
     </head>
     <body onload="start()">
         <div id="countdown">
-            <span id="content">Set countdown</span>
+            <span id="content"></span>
+            <p id="help">To set a countdown, add a configuration string to your URL.
+                Examples:
+                <table>
+                    <tr><td>simple_countdown.html?1h</td><td>1 hour countdown</td></tr>
+                    <tr><td>simple_countdown.html?65m</td><td>1 hour and 5 minute countdown</td></tr>
+                    <tr><td>simple_countdown.html?1h30m15s</td><td>1 hour, 30 minute and 15 second countdown</td></tr>
+                </table></p>
         </div>
     </body>
 </html>
